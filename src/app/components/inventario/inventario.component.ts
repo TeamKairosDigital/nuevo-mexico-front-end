@@ -43,6 +43,8 @@ export class InventarioComponent {
   first = 0;
   rows = 10;
 
+  expandedRows: { [key: number]: boolean } = {};
+
   // PRODUCTO
   createInventarioDto: createInventarioDto = {
     id: 0,
@@ -56,8 +58,9 @@ export class InventarioComponent {
   }
 
   // Parametros
-  unidades: itemsResponseDto[] = [];
-  clasificacion: itemsResponseDto[] = [];
+  unidadesFiltro: itemsResponseDto[] = [];
+  clasificacionFiltro: itemsResponseDto[] = [];
+
 
   // ENTRADA DE PRODUCTO
   createEntradaInventarioDto: createEntradaInventarioDto = {
@@ -67,6 +70,9 @@ export class InventarioComponent {
     idUsuario: 0,
     id_producto: 0
   }
+
+  unidades: itemsResponseDto[] = [];
+  clasificacion: itemsResponseDto[] = [];
 
   constructor(
     private inventarioService: InventarioService,
@@ -91,6 +97,7 @@ export class InventarioComponent {
           element.icon = 'pi pi-chevron-right';
         });
       }
+      this.collapseAll();
       this.spinner = false;
     });
   }
@@ -100,11 +107,26 @@ export class InventarioComponent {
     this.rows = event.rows;
   }
 
+  // expandAll() {
+  //   this.expandedRows = this.inventarioResponseDto.reduce((acc: { [key: number]: boolean }, p) => {
+  //     acc[p.id] = true;
+  //     return acc;
+  //   }, {});
+  // }
+
+  collapseAll() {
+      this.expandedRows = {};
+  }
+
   toggleIcon(documento: any): void {
     documento.icon = 
       documento.icon === 'pi pi-chevron-right' ? 
       'pi pi-chevron-down' : 
       'pi pi-chevron-right';
+  }
+
+  buscar(){
+    this.getListInventario(this.filterInventarioDto);
   }
 
   // PRODUCTO
@@ -233,6 +255,18 @@ export class InventarioComponent {
     this.inventarioService.getClasificacionProductos().subscribe((response) => {
       if (response.success && response.data) {
         this.clasificacion = response.data;
+
+        // Crear el objeto adicional
+        const objetoAdicional: itemsResponseDto = {
+          id: 0,
+          nombre: 'Todos',
+          deserialize: function (input: any): itemsResponseDto {
+            throw new Error('Function not implemented.');
+          }
+        };
+
+        // Guardar los datos en la variable clasificacionFiltro
+        this.clasificacionFiltro = [objetoAdicional, ...response.data];
       }
     });
   }
@@ -241,6 +275,18 @@ export class InventarioComponent {
     this.inventarioService.getUnidades().subscribe((response) => {
       if (response.success && response.data) {
         this.unidades = response.data;
+
+        // Crear el objeto adicional
+        const objetoAdicional: itemsResponseDto = {
+            id: 0,
+            nombre: 'Todos',
+            deserialize: function (input: any): itemsResponseDto {
+              throw new Error('Function not implemented.');
+          }
+        };
+
+        // Guardar los datos en la variable clasificacionFiltro
+        this.unidadesFiltro = [objetoAdicional, ...response.data];
       }
     });
   }
@@ -255,24 +301,24 @@ export class InventarioComponent {
     
   }
 
-  isFormValid(value: string): boolean {
+  botonValid(value: string): boolean {
 
-    // if (value == 'Producto') {
-    //   if (this.EsNuevo && this.createInventarioDto.codigo != '' && this.createInventarioDto.idClasificacionProducto != 0 && this.createInventarioDto.nombre_producto != '' &&
-    //     this.createInventarioDto.idUnidad != 0 && this.createInventarioDto.inventario_inicial != 0 && this.createInventarioDto.costo_inicial != 0
-    //   ) {
-    //     return false;
-    //   }else{
-    //     return true;
-    //   }
-    // } else {
-    //   if (this.createEntradaInventarioDto.entrada != 0 && this.createEntradaInventarioDto.costo != 0) {
-    //     return false;
-    //   } else {
-    //     return true;
-    //   }
-    // }
-    return false
+    if (value == 'Producto') {
+      if (Number(this.createInventarioDto.idClasificacionProducto) > 0 && this.createInventarioDto.nombre_producto.length > 0 &&
+      Number(this.createInventarioDto.idUnidad) > 0 && Number(this.createInventarioDto.inventario_inicial) > 0 && Number(this.createInventarioDto.costo_inicial) > 0
+      ) {
+        return false;
+      }else{
+        return true;
+      }
+    } else {
+      if (Number(this.createEntradaInventarioDto.entrada) > 0 && this.createEntradaInventarioDto.entrada != null && 
+          Number(this.createEntradaInventarioDto.costo) > 0 && this.createEntradaInventarioDto.costo != null) {
+        return false;
+      } else {
+        return true;
+      }
+    }
 
   }
 
@@ -304,6 +350,23 @@ export class InventarioComponent {
     });
   }
 
+  private clear(){
 
+    // createInventarioDto
+    this.createInventarioDto.id = 0;
+    this.createInventarioDto.codigo = '';
+    this.createInventarioDto.idClasificacionProducto = 0;
+    this.createInventarioDto.nombre_producto = '';
+    this.createInventarioDto.idUnidad = 0;
+    this.createInventarioDto.inventario_inicial = 0;
+    this.createInventarioDto.costo_inicial = 0;
+
+    // createEntradaInventarioDto
+    this.createEntradaInventarioDto.id = 0
+    this.createEntradaInventarioDto.entrada = 0
+    this.createEntradaInventarioDto.costo = 0
+    this.createEntradaInventarioDto.id_producto = 0
+
+  }
 
 }

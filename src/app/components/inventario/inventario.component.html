@@ -6,10 +6,49 @@
 
 <div class="card">
 
+    <!-- FILTROS -->
+    <p-card>
+        <div class="flex align-items-center justify-content-center">
+            <!-- Filtro Clasificación -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Clasificación:</label>
+                <p-dropdown 
+                    [options]="clasificacionFiltro" 
+                    [(ngModel)]="this.filterInventarioDto.idClasificacionProducto" 
+                    optionLabel="nombre"
+                    optionValue="id" 
+                    placeholder="Seleccionar clasificación">
+                </p-dropdown>
+            </div>
+            <!-- Filtro Unidades -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Unidades:</label>
+                <p-dropdown 
+                    [options]="unidadesFiltro"
+                    [(ngModel)]="this.filterInventarioDto.idUnidad"
+                    optionLabel="nombre"
+                    optionValue="id"
+                    placeholder="Seleccionar unidad">
+                </p-dropdown>
+            </div>
+            <!-- Filtro Nombre -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Buscar por nombre:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.filterInventarioDto.nombreProducto"
+                pInputText />
+            </div>
+
+            <div>
+                <p-button label="Buscar" [raised]="true" (onClick)="buscar()"/>
+            </div>
+        </div>
+    </p-card>
+
+    <!-- TABLA -->
     <p-table [value]="inventarioResponseDto" dataKey="id" [paginator]="true" [rows]="5" [first]="first"
         [showCurrentPageReport]="true" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped"
         [sortOrder]="-1" currentPageReportTemplate="Mostrando de {first} a {last} de {totalRecords} datos"
-        (onPage)="pageChange($event)" [rowsPerPageOptions]="[5, 10, 15]">
+        (onPage)="pageChange($event)" [rowsPerPageOptions]="[5, 10, 15]" [expandedRowKeys]="expandedRows">
 
         <ng-template pTemplate="caption">
             <div class="flex align-items-center justify-content-around">
@@ -17,8 +56,10 @@
                     <h3 class="m-0">Lista de productos</h3>
                 </div>
                 <div>
-                    <i class="pi pi-file-plus cursor-pointer" style="font-size: 2rem"
-                        (click)="openModalProducto()"></i>
+                    <!-- <i class="pi pi-file-plus cursor-pointer" style="font-size: 2rem"
+                        (click)="openModalProducto()"></i> -->
+                    <p-button label="Agregar Producto" icon="pi pi-plus cursor-pointer" severity="primary"
+                    [outlined]="true" (onClick)="openModalProducto()" />
                 </div>
             </div>
         </ng-template>
@@ -27,27 +68,27 @@
         <ng-template pTemplate="header">
             <tr class="p-text-center">
                 <th style="width:5%">
-                <th pSortableColumn="nombre">Código <p-sortIcon field="nombre" />
+                <th pSortableColumn="id">Código <p-sortIcon field="id" />
                 <th style="width:10%" pSortableColumn="clasificacionProducto">Clasificación <p-sortIcon field="clasificacionProducto" />
-                <th style="width:10%" pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" />
+                <th style="width:10%" pSortableColumn="nombre_producto">Nombre <p-sortIcon field="nombre_producto" />
                 <th pSortableColumn="unidad">Unidad <p-sortIcon field="unidad" />
-                <th pSortableColumn="inventarioInicial">Inventario inicial <p-sortIcon field="inventarioInicial" />
-                <th pSortableColumn="costoInicial">Costo inicial <p-sortIcon field="costoInicial" />
-                <th pSortableColumn="cantidadActual">Cantidad actual <p-sortIcon field="cantidadActual" />
-                <th pSortableColumn="precioActual">Precio actual <p-sortIcon field="precioActual" />
-                <th pSortableColumn="fechaCreacion">Fecha <p-sortIcon field="fechaCreacion" />
+                <th pSortableColumn="inventario_inicial">Inventario inicial <p-sortIcon field="inventario_inicial" />
+                <th pSortableColumn="costo_inicial">Costo inicial <p-sortIcon field="costo_inicial" />
+                <th pSortableColumn="cantidad_actual">Cantidad actual <p-sortIcon field="cantidad_actual" />
+                <th pSortableColumn="precio_actual">Precio actual <p-sortIcon field="precio_actual" />
+                <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha" />
                 <!-- <th class="align-content-center">Acciones</th> -->
             </tr>
         </ng-template>
 
         <!-- Body -->
         <ng-template pTemplate="body" let-producto>
-            <tr class="p-text-center">
+            <tr class="align-items-center">
                 <td>
                     <p-button type="button" pRipple [pRowToggler]="producto" [text]="true" [rounded]="true"
                         [plain]="true" [icon]="producto.icon" (onClick)="toggleIcon(producto)"/>
                 </td>
-                <td>{{ producto.codigo }}</td>
+                <td>{{ producto.id }}</td>
                 <td>{{ producto.clasificacionProducto }}</td>
                 <td>{{ producto.nombre_producto }}</td>
                 <td>{{ producto.unidad }}</td>
@@ -55,7 +96,7 @@
                 <td>${{ producto.costo_inicial }}</td>
                 <td>{{ producto.cantidad_actual }}</td>
                 <td>${{ producto.precio_actual }}</td>
-                <td>{{ producto.fechaCreacion }}</td>
+                <td>{{ producto.fecha }}</td>
                 <!-- <td>
                     <div class="flex justify-content-center flex-wrap">
                         <div class="px-2">
@@ -81,12 +122,13 @@
                             <p-button label="Agregar Entrada" icon="pi pi-plus cursor-pointer" severity="primary"
                                 [outlined]="true" (onClick)="openModalEntrada(producto.id)" />
                         </div>
-                        <p-table [value]="producto.entradaInventariado" dataKey="id" class="p-datatable p-mt-3 w-9">
+                        <p-table [value]="producto.entradaInventariado" dataKey="idEntrada" class="p-datatable p-mt-3 w-9">
                             <ng-template pTemplate="header">
                                 <tr class="p-text-center">
                                     <th style="width: 14%;">ID</th>
                                     <th style="width: 14%;">Entrada</th>
                                     <th style="width: 14%;">Costo</th>
+                                    <th style="width: 14%;">Fecha</th>
                                     <!-- <th>Acciones</th> -->
                                 </tr>
                             </ng-template>
@@ -94,7 +136,8 @@
                                 <tr class="p-text-center">
                                     <td>{{ entradaInventariado.id }}</td>
                                     <td>{{ entradaInventariado.entrada }}</td>
-                                    <td>{{ entradaInventariado.costo }}</td>
+                                    <td>${{ entradaInventariado.costo }}</td>
+                                    <td>{{ entradaInventariado.fecha }}</td>
                                     <!-- <td>
                                         <div class="flex justify-content-center flex-wrap">
                                             <div class="px-2">
@@ -124,15 +167,15 @@
     <p-confirmDialog />
 
     <!-- AGREGAR PRODUCTO -->
-    <p-dialog [(visible)]="dialogProduct" [style]="{ width: '750px' }" header="Agregar entrada para el producto" [modal]="true"
+    <p-dialog [(visible)]="dialogProduct" [style]="{ width: '750px' }" header="Agregar producto" [modal]="true"
         styleClass="p-fluid">
         <ng-template pTemplate="content">
 
-            <div class="field">
+            <!-- <div class="field">
                 <label for="name">Código:</label>
                 <input id="disabled-input" type="text" [(ngModel)]="this.createInventarioDto.codigo"
                     pInputText />
-            </div>
+            </div> -->
 
             <div class="mb-3">
                 <label class="mb-2">Clasificación:</label>
@@ -179,12 +222,12 @@
         <ng-template pTemplate="footer">
             <p-button label="Cerrar" icon="pi pi-times" [text]="true" (onClick)="hideDialog('Producto')" />
             <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="createProducto()"
-                [disabled]="isFormValid('')" />
+                [disabled]="botonValid('Producto')" />
         </ng-template>
     </p-dialog>
 
     <!-- AGREGAR ENTRADA -->
-    <p-dialog [(visible)]="dialogEntrada" [style]="{ width: '750px' }" header="Agregar entrada" [modal]="true"
+    <p-dialog [(visible)]="dialogEntrada" [style]="{ width: '750px' }" header="Agregar entrada para el producto" [modal]="true"
         styleClass="p-fluid">
         <ng-template pTemplate="content">
 
@@ -205,7 +248,7 @@
         <ng-template pTemplate="footer">
             <p-button label="Cerrar" icon="pi pi-times" [text]="true" (onClick)="hideDialog('archivo')" />
             <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="createEntrada()"
-                [disabled]="isFormValid('archivo')" />
+                [disabled]="botonValid('archivo')" />
         </ng-template>
     </p-dialog>
 
