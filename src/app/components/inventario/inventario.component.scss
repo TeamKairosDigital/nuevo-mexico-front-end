@@ -1,0 +1,12 @@
+/* Tabla principal centrada */
+.p-datatable {
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Tabla expandida centrada */
+.p-datatable p-datatable-tbody {
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+}

@@ -1,1 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
+// @import "primeflex/primeflex.css";
+// @import "primeicons/primeicons.css";
+
+// @import "primeng/resources/themes/lara-light-blue/theme.css";
+// @import "primeng/resources/primeng.css";
+// @import "primeng/resources/primeng.min.css";
+// @import "primeflex/primeflex.css";
+// @import "primeicons/primeicons.css";
+// @import "primeng/resources/primeng.min.css";
+// @import "primeng/resources/themes/lara-light-indigo/theme.css"; 
+
+// @import "primeng/resources/themes/lara-light-indigo/theme.css"; /* o el tema que estés usando */
+// @import "primeng/resources/primeng.min.css";
+// @import "primeicons/primeicons.css";
+// @import 'primeng/resources/themes/lara-light-indigo/theme.css';
+// @import 'primeng/resources/primeng.min.css';
+
+@import "primeng/resources/primeng.min.css";
+@import "primeflex/primeflex.css";
+@import "primeicons/primeicons.css";
+
+.overlay {
+    position: fixed; /* Para que el overlay ocupe toda la pantalla */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Ancho completo de la ventana */
+    height: 100vh; /* Alto completo de la ventana */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+    display: flex; /* Usamos flexbox para centrar */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+    z-index: 9999; /* Aseguramos que esté encima de otros elementos */
+}
+
+.spinner {
+    width: 4rem;
+    height: 4rem;
+}
