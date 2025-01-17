@@ -97,6 +97,7 @@ export class InventarioComponent {
           element.icon = 'pi pi-chevron-right';
         });
       }
+      this.clear();
       this.collapseAll();
       this.spinner = false;
     });
@@ -249,48 +250,6 @@ export class InventarioComponent {
   }
   // ENTRADA DEL PRODUCTO
 
-
-  // Parametros
-  getClasificacionProductos(): void {
-    this.inventarioService.getClasificacionProductos().subscribe((response) => {
-      if (response.success && response.data) {
-        this.clasificacion = response.data;
-
-        // Crear el objeto adicional
-        const objetoAdicional: itemsResponseDto = {
-          id: 0,
-          nombre: 'Todos',
-          deserialize: function (input: any): itemsResponseDto {
-            throw new Error('Function not implemented.');
-          }
-        };
-
-        // Guardar los datos en la variable clasificacionFiltro
-        this.clasificacionFiltro = [objetoAdicional, ...response.data];
-      }
-    });
-  }
-
-  getUnidades(): void {
-    this.inventarioService.getUnidades().subscribe((response) => {
-      if (response.success && response.data) {
-        this.unidades = response.data;
-
-        // Crear el objeto adicional
-        const objetoAdicional: itemsResponseDto = {
-            id: 0,
-            nombre: 'Todos',
-            deserialize: function (input: any): itemsResponseDto {
-              throw new Error('Function not implemented.');
-          }
-        };
-
-        // Guardar los datos en la variable clasificacionFiltro
-        this.unidadesFiltro = [objetoAdicional, ...response.data];
-      }
-    });
-  }
-
   // Cerrar modal
   hideDialog(name: string) {
     if (name == 'Producto') {
@@ -320,6 +279,47 @@ export class InventarioComponent {
       }
     }
 
+  }
+
+  // Parametros
+  private getClasificacionProductos(): void {
+    this.inventarioService.getClasificacionProductos().subscribe((response) => {
+      if (response.success && response.data) {
+        this.clasificacion = response.data;
+
+        // Crear el objeto adicional
+        const objetoAdicional: itemsResponseDto = {
+          id: 0,
+          nombre: 'Todos',
+          deserialize: function (input: any): itemsResponseDto {
+            throw new Error('Function not implemented.');
+          }
+        };
+
+        // Guardar los datos en la variable clasificacionFiltro
+        this.clasificacionFiltro = [objetoAdicional, ...response.data];
+      }
+    });
+  }
+
+  private getUnidades(): void {
+    this.inventarioService.getUnidades().subscribe((response) => {
+      if (response.success && response.data) {
+        this.unidades = response.data;
+
+        // Crear el objeto adicional
+        const objetoAdicional: itemsResponseDto = {
+            id: 0,
+            nombre: 'Todos',
+            deserialize: function (input: any): itemsResponseDto {
+              throw new Error('Function not implemented.');
+          }
+        };
+
+        // Guardar los datos en la variable clasificacionFiltro
+        this.unidadesFiltro = [objetoAdicional, ...response.data];
+      }
+    });
   }
 
   // Eliminar el producto

@@ -1,6 +1,5 @@
 import { Deserializable } from "../../interfaces";
 
-
 export class inventarioResponseDto implements Deserializable {
 
     id: number;
