@@ -45,10 +45,26 @@ export class EmpleadoComponent {
   tiposEmpleado: itemsResponseDto[] = [];
   tiposEmpleadoFiltro: itemsResponseDto[] = [];
 
+  empleadoResponseById: empleadoResponseDto = {
+    id: 0,
+    tipoEmpelado: '',
+    idTipoEmpelado: 0,
+    codigo_empleado: '',
+    nombre_Empleado: '',
+    telefono: '',
+    region_origen: '',
+    acompanantes: 0,
+    observaciones: '',
+    
+    deserialize: function (input: any): empleadoResponseDto {
+      throw new Error('Function not implemented.');
+    }
+  }
+
   createEmpleadoDto: createEmpleadoDto = {
     id: 0,
     codigo_empleado: '',
-    idTipoEmpelado: 0,
+    idTipoEmpleado: 0,
     nombre_Empleado: '',
     telefono: '',
     region_origen: '',
@@ -85,6 +101,11 @@ export class EmpleadoComponent {
     });
   }
 
+  pageChange(event: any) {
+    this.first = event.first;
+    this.rows = event.rows;
+  }
+
   toggleIcon(documento: any): void {
     documento.icon = 
       documento.icon === 'pi pi-chevron-right' ? 
@@ -96,8 +117,13 @@ export class EmpleadoComponent {
     this.getListEmpleado(this.filterEmpleadoDto);
   }
 
-  openModalProducto(id: number = 0){
+  openModalEmpleado(id: number = 0){
     // this.EsNuevo = true;
+    this.clear();
+    if(id != 0){
+      this.createEmpleadoDto.id = id;
+      this.getEmpleadoById(id);
+    }
     this.dialogEmpleado = true;
   }
 
@@ -111,22 +137,50 @@ export class EmpleadoComponent {
 
     this.createEmpleadoDto.idUsuario = Number(this.storageService.getItem('userId'));
     if (this.createEmpleadoDto.id != 0) {
-      this.rhService.updateEmpleado(this.createEmpleadoDto).subscribe((response) => {
-        if (response.success) {
-          this.hideDialog('');
-          this.getListEmpleado(this.filterEmpleadoDto);
-          this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
-        }
-        this.spinner = false;
+      this.rhService.updateEmpleado(this.createEmpleadoDto).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.hideDialog('');
+            this.getListEmpleado(this.filterEmpleadoDto);
+            this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message, life: 10000 });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, life: 10000 });
+          }
+          this.spinner = false; // Detén el spinner en ambos casos
+        },
+        error: (error) => {
+          // Maneja el error del backend y muestra un mensaje
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error.message || 'Error al crear el empleado',
+            life: 10000
+          });
+          this.spinner = false; // Detén el spinner en caso de error
+        },
       });
     } else {
-      this.rhService.createEmpleado(this.createEmpleadoDto).subscribe((response) => {
-        if (response.success) {
-          this.hideDialog('');
-          this.getListEmpleado(this.filterEmpleadoDto);
-          this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
-        }
-        this.spinner = false;
+      this.rhService.createEmpleado(this.createEmpleadoDto).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.hideDialog('');
+            this.getListEmpleado(this.filterEmpleadoDto);
+            this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message, life: 10000 });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, life: 10000 });
+          }
+          this.spinner = false; // Detén el spinner en ambos casos
+        },
+        error: (error) => {
+          // Maneja el error del backend y muestra un mensaje
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error.message || 'Error al crear el empleado',
+            life: 10000
+          });
+          this.spinner = false; // Detén el spinner en caso de error
+        },
       });
     }
 
@@ -155,6 +209,36 @@ export class EmpleadoComponent {
 
   }
 
+  botonValid(value: string): boolean {
+
+    if (this.createEmpleadoDto.codigo_empleado.length > 0 &&  Number(this.createEmpleadoDto.idTipoEmpleado) > 0 && this.createEmpleadoDto.nombre_Empleado.length > 0  && 
+        this.createEmpleadoDto.telefono.toString().length == 10 && this.createEmpleadoDto.region_origen.length > 0 &&  this.createEmpleadoDto.observaciones.length > 0) 
+    {
+      return false;
+    } else {
+      return true;
+    }
+
+  }
+
+  // Permitir solo números al presionar teclas
+  validateNumber(event: KeyboardEvent): void {
+    const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    if (
+      !/[0-9]/.test(event.key) && // Permitir solo números
+      !allowedKeys.includes(event.key) // Permitir teclas adicionales como borrar, tab, flechas
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  // Limitar el valor a un máximo de 10 dígitos
+  limitToTenDigits(): void {
+    if (this.createEmpleadoDto.telefono.length > 10) {
+      this.createEmpleadoDto.telefono = this.createEmpleadoDto.telefono.slice(0, 10);
+    }
+  }
+
   private collapseAll() {
     this.expandedRows = {};
   }
@@ -179,37 +263,50 @@ export class EmpleadoComponent {
     });
   }
 
-  // Eliminar el producto
+  private getEmpleadoById(id: number){
+    
+    this.spinner = true;
+    this.rhService.getEmpleadoById(id).subscribe((response) => {
+      if (response.success && response.data) {
+        this.createEmpleadoDto = response.data;
+        // this.createEmpleadoDto.id = this.empleadoResponseById.id;
+
+      }
+      this.spinner = false;
+    });
+  }
+
+  // Eliminar el Empleado
   private deleteEmpleado(id: number) {
+    this.spinner = true;
     this.rhService.deleteEmpleado(id).subscribe((response) => {
 
       if (response.success) {
         this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: response.message });
         this.getListEmpleado(this.filterEmpleadoDto);
+        this.clear();
+        this.spinner = false;
       } else {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
         console.error('Error deleting document:', response.message);
+        this.spinner = false;
       }
+
     });
   }
 
-  // private clear(){
+  private clear(){
 
-  //   // createInventarioDto
-  //   this.createInventarioDto.id = 0;
-  //   this.createInventarioDto.codigo = '';
-  //   this.createInventarioDto.idClasificacionProducto = 0;
-  //   this.createInventarioDto.nombre_producto = '';
-  //   this.createInventarioDto.idUnidad = 0;
-  //   this.createInventarioDto.inventario_inicial = 0;
-  //   this.createInventarioDto.costo_inicial = 0;
+    // createEmpleadoDto
+    this.createEmpleadoDto.id = 0;
+    this.createEmpleadoDto.codigo_empleado = '';
+    this.createEmpleadoDto.idTipoEmpleado = 0;
+    this.createEmpleadoDto.nombre_Empleado = '';
+    this.createEmpleadoDto.telefono = '';
+    this.createEmpleadoDto.region_origen = '';
+    this.createEmpleadoDto.acompanantes = 0;
+    this.createEmpleadoDto.observaciones = '';
 
-  //   // createEntradaInventarioDto
-  //   this.createEntradaInventarioDto.id = 0
-  //   this.createEntradaInventarioDto.entrada = 0
-  //   this.createEntradaInventarioDto.costo = 0
-  //   this.createEntradaInventarioDto.id_producto = 0
-
-  // }
+  }
 
 }

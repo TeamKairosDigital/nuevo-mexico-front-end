@@ -57,6 +57,9 @@ export class InventarioComponent {
     idUsuario: 0
   }
 
+  inventario_inicial: number = 0;
+  costo_inicial: number = 0;
+
   // Parametros
   unidadesFiltro: itemsResponseDto[] = [];
   clasificacionFiltro: itemsResponseDto[] = [];
@@ -97,7 +100,6 @@ export class InventarioComponent {
           element.icon = 'pi pi-chevron-right';
         });
       }
-      this.clear();
       this.collapseAll();
       this.spinner = false;
     });
@@ -134,6 +136,11 @@ export class InventarioComponent {
   // Abrir modal para crear y editar producto
   openModalProducto(id: number = 0){
     // this.EsNuevo = true;
+    this.clear();
+    if(id != 0){
+      this.createEntradaInventarioDto.id = id;
+      this.getEmpleadoById(id);
+    }
     this.dialogProduct = true;
   }
 
@@ -142,22 +149,66 @@ export class InventarioComponent {
 
     this.createInventarioDto.idUsuario = Number(this.storageService.getItem('userId'));
     if (this.createInventarioDto.id != 0) {
-      this.inventarioService.updateInventario(this.createInventarioDto).subscribe((response) => {
-        if (response.success) {
-          this.hideDialog('Producto');
-          this.getListInventario(this.filterInventarioDto);
-          this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
-        }
-        this.spinner = false;
+      // this.inventarioService.updateInventario(this.createInventarioDto).subscribe((response) => {
+      //   if (response.success) {
+      //     this.hideDialog('Producto');
+      //     this.getListInventario(this.filterInventarioDto);
+      //     this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
+      //   }
+      //   this.spinner = false;
+      // });
+      this.inventarioService.updateInventario(this.createInventarioDto).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.hideDialog('Producto');
+            this.getListInventario(this.filterInventarioDto);
+            this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message, life: 10000 });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, life: 10000 });
+          }
+          this.spinner = false; // Detén el spinner en ambos casos
+        },
+        error: (error) => {
+          // Maneja el error del backend y muestra un mensaje
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error.message || 'Error al crear el empleado',
+            life: 10000
+          });
+          this.spinner = false; // Detén el spinner en caso de error
+        },
       });
     } else {
-      this.inventarioService.createInventario(this.createInventarioDto).subscribe((response) => {
-        if (response.success) {
-          this.hideDialog('Producto');
-          this.getListInventario(this.filterInventarioDto);
-          this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
-        }
-        this.spinner = false;
+      // this.inventarioService.createInventario(this.createInventarioDto).subscribe((response) => {
+      //   if (response.success) {
+      //     this.hideDialog('Producto');
+      //     this.getListInventario(this.filterInventarioDto);
+      //     this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
+      //   }
+      //   this.spinner = false;
+      // });
+      this.inventarioService.createInventario(this.createInventarioDto).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.hideDialog('Producto');
+            this.getListInventario(this.filterInventarioDto);
+            this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message, life: 10000 });
+          } else {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message, life: 10000 });
+          }
+          this.spinner = false; // Detén el spinner en ambos casos
+        },
+        error: (error) => {
+          // Maneja el error del backend y muestra un mensaje
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: error.error.message || 'Error al crear el empleado',
+            life: 10000
+          });
+          this.spinner = false; // Detén el spinner en caso de error
+        },
       });
     }
 
@@ -327,10 +378,10 @@ export class InventarioComponent {
     this.inventarioService.deleteInventario(id).subscribe((response) => {
 
       if (response.success) {
-        this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: 'Aviso de privacidad ha sido eliminado' });
+        this.messageService.add({ severity: 'info', summary: 'Eliminado', detail: response.message });
         this.getListInventario(this.filterInventarioDto);
       } else {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Se produjo un error al eliminar Aviso de privacidad' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: response.message });
         console.error('Error deleting document:', response.message);
       }
     });
@@ -350,6 +401,19 @@ export class InventarioComponent {
     });
   }
 
+  private getEmpleadoById(id: number){
+    
+    this.spinner = true;
+    this.inventarioService.getInventarioById(id).subscribe((response) => {
+      if (response.success && response.data) {
+        this.createInventarioDto = response.data;
+        this.inventario_inicial = this.createInventarioDto.inventario_inicial
+        this.costo_inicial = this.createInventarioDto.costo_inicial
+      }
+      this.spinner = false;
+    });
+  }
+
   private clear(){
 
     // createInventarioDto
@@ -366,6 +430,9 @@ export class InventarioComponent {
     this.createEntradaInventarioDto.entrada = 0
     this.createEntradaInventarioDto.costo = 0
     this.createEntradaInventarioDto.id_producto = 0
+
+    this.inventario_inicial = 0;
+    this.costo_inicial = 0;
 
   }
 

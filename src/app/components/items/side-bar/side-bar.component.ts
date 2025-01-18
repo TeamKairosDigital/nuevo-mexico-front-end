@@ -22,6 +22,9 @@ export class SideBarComponent {
   checked: boolean = false;
   sidebarVisible: boolean = false;
 
+  name: string = '';
+  rol: string = '';
+
   constructor(
     private router: Router,
     private themeService: ThemeService,
@@ -42,6 +45,8 @@ export class SideBarComponent {
       this.checked = false;
     }
 
+    this.name = this.storageService.getItem('nombre') || '';
+    this.rol = this.storageService.getItem('rol') || '';
     // const storedUser = this.storageService.getItem<UserLS>('user');
     // if (storedUser) {
     //   this.user = storedUser;

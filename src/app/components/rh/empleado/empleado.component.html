@@ -3,3 +3,174 @@
     <h2 class="mx-auto font-size: 4rem">EMPLEADOS</h2>
 </div>
 
+<div>
+
+    <!-- FILTROS -->
+    <p-card>
+        <div class="flex align-items-center justify-content-center">
+            <!-- Filtro Tipo de empleado -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Tipo de empleado:</label>
+                <p-dropdown 
+                    [options]="tiposEmpleadoFiltro" 
+                    [(ngModel)]="this.filterEmpleadoDto.idTipoEmpleado" 
+                    optionLabel="nombre"
+                    optionValue="id" 
+                    placeholder="Seleccionar tipo de empleado">
+                </p-dropdown>
+            </div>
+            <!-- Filtro Nombre -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Buscar por nombre:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.filterEmpleadoDto.nombreEmpleado"
+                pInputText />
+            </div>
+
+            <div>
+                <p-button label="Buscar" [raised]="true" (onClick)="buscar()"/>
+            </div>
+        </div>
+    </p-card>
+
+    <!-- TABLA -->
+    <p-table [value]="empleadoResponseDto" dataKey="id" [paginator]="true" [rows]="5" [first]="first"
+        [showCurrentPageReport]="true" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped"
+        [sortOrder]="-1" currentPageReportTemplate="Mostrando de {first} a {last} de {totalRecords} datos"
+        (onPage)="pageChange($event)" [rowsPerPageOptions]="[5, 10, 15]" [expandedRowKeys]="expandedRows">
+
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-around">
+                <div>
+                    <h3 class="m-0">Lista de empleado</h3>
+                </div>
+                <div>
+                    <!-- <i class="pi pi-file-plus cursor-pointer" style="font-size: 2rem"
+                        (click)="openModalProducto()"></i> -->
+                    <p-button label="Agregar Empleado" icon="pi pi-plus cursor-pointer" severity="primary"
+                    [outlined]="true" (onClick)="openModalEmpleado()" />
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Header -->
+        <ng-template pTemplate="header">
+            <tr class="p-text-center">
+                <th style="width:10%" pSortableColumn="codigo_empleado">Código Empleado<p-sortIcon field="codigo_empleado" />
+                <th style="width:5%" pSortableColumn="tipoEmpleado">Tipo Empleado <p-sortIcon field="tipoEmpleado" />
+                <th style="width:10%" pSortableColumn="nombre_Empleado">Nombre <p-sortIcon field="nombre_Empleado" />
+                <th pSortableColumn="telefono">Teléfono <p-sortIcon field="telefono" />
+                <th pSortableColumn="region_origen">Región/origen <p-sortIcon field="region_origen" />
+                <th pSortableColumn="acompanantes">Acompañantes <p-sortIcon field="acompanantes" />
+                <th pSortableColumn="observaciones">Observaciones <p-sortIcon field="observaciones" />
+                <th style="width:5%" pSortableColumn="fecha_creacion">Fecha creación <p-sortIcon field="fecha_creacion" />
+                <th style="width:5%" pSortableColumn="usuario_creacion">Usuario creación <p-sortIcon field="usuario_creacion" />
+                <th style="width:5%" pSortableColumn="fecha_modificacion">Fecha modificación <p-sortIcon field="fecha_modificacion" />
+                <th style="width:5%" pSortableColumn="usuario_modificacion">Usuario modificación <p-sortIcon field="usuario_modificacion" />
+                <th style="width:10%" class="align-content-center">Acciones</th>
+            </tr>
+        </ng-template>
+
+        <!-- Body -->
+        <ng-template pTemplate="body" let-empleado>
+            <tr class="align-items-center">
+                <td>{{ empleado.codigo_empleado }}</td>
+                <td>{{ empleado.tipoEmpleado }}</td>
+                <td>{{ empleado.nombre_Empleado }}</td>
+                <td>{{ empleado.telefono }}</td>
+                <td>{{ empleado.region_origen }}</td>
+                <td>{{ empleado.acompanantes }}</td>
+                <td>{{ empleado.observaciones }}</td>
+                <td>{{ empleado.fecha_creacion }}</td>
+                <td>{{ empleado.usuario_creacion }}</td>
+                <td>{{ empleado.fecha_modificacion }}</td>
+                <td>{{ empleado.usuario_modificacion }}</td>
+                <td>
+                    <div class="flex justify-content-center flex-wrap">
+                        <div class="px-2">
+                            <p-button icon="pi pi-pen-to-square" [outlined]="true"
+                                (onClick)="openModalEmpleado(empleado.id)" />
+                        </div>
+                        <div class="px-2">
+                            <p-button icon="pi pi-trash" severity="danger" [outlined]="true"
+                                (onClick)="confirmDeleteEmpleado($event, empleado.id)"/>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+    <p-confirmDialog />
+
+    <!-- AGREGAR Empleado -->
+    <p-dialog [(visible)]="dialogEmpleado" [style]="{ width: '750px' }" header="Agregar Empleado" [modal]="true"
+        styleClass="p-fluid">
+        <ng-template pTemplate="content">
+
+            <div class="mb-3">
+                <label class="mr-2">Tipo de empleado:</label>
+                <p-dropdown 
+                    [options]="tiposEmpleado" 
+                    [(ngModel)]="this.createEmpleadoDto.idTipoEmpleado" 
+                    optionLabel="nombre"
+                    optionValue="id" 
+                    placeholder="Seleccionar tipo de empleado">
+                </p-dropdown>
+            </div>
+
+            <div class="field">
+                <label for="name">Código de empleado:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.createEmpleadoDto.codigo_empleado"
+                    pInputText />
+            </div>
+            
+            <div class="field">
+                <label for="name">Nombre del empleado:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.createEmpleadoDto.nombre_Empleado"
+                    pInputText />
+            </div>
+
+            <div class="field">
+                <label for="name">Teléfono:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.createEmpleadoDto.telefono"
+                    pInputText     
+                    maxlength="10" 
+                    (keypress)="validateNumber($event)"
+                    (input)="limitToTenDigits()" />
+            </div>
+
+            <div class="field">
+                <label for="name">Región/origen:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.createEmpleadoDto.region_origen"
+                    pInputText />
+            </div>
+
+            <div class="field">
+                <label for="name">acompanantes:</label>
+                <input id="disabled-input" type="number" [(ngModel)]="this.createEmpleadoDto.acompanantes"
+                    pInputText />
+            </div>
+
+            <div class="field">
+                <label for="name">observaciones:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.createEmpleadoDto.observaciones"
+                    pInputText />
+            </div>
+
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cerrar" icon="pi pi-times" [text]="true" (onClick)="hideDialog('')" />
+            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="createEmpleado()"
+                [disabled]="botonValid('')" />
+        </ng-template>
+    </p-dialog>
+
+    <p-toast />
+
+    <div *ngIf="spinner" class="overlay">
+        <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="8" fill="var(--surface-ground)"
+            animationDuration=".5s" />
+    </div>
+
+</div>

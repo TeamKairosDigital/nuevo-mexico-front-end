@@ -12,8 +12,12 @@ export class AuthService {
 
   private api = environment.apiUrl;
   private apiUrl = `${this.api}/auth`;
+  localStorage: any;
 
   constructor(private http: HttpClient) { 
+    if (typeof window !== 'undefined') {
+      this.localStorage = window.localStorage;
+    }
   }
 
   // LOGIN
@@ -22,8 +26,13 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('user');
-    localStorage.removeItem('access_token');
+    if (this.localStorage) {
+      this.localStorage.removeItem('userId');
+      this.localStorage.removeItem('username');
+      this.localStorage.removeItem('nombre');
+      this.localStorage.removeItem('rol');
+      this.localStorage.removeItem('access_token');
+    }
   }
 
   // Método para verificar si el usuario está autenticado
@@ -47,8 +56,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    const token = localStorage.getItem('access_token');
-    return token;
+    return this.localStorage ? this.localStorage.getItem('access_token') : null;
   }
 
 }

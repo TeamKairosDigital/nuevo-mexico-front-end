@@ -20,6 +20,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
 import { RouterModule } from '@angular/router';
+import { ChartModule } from 'primeng/chart';
 
 @NgModule({
     imports: [
@@ -42,7 +43,8 @@ import { RouterModule } from '@angular/router';
         PasswordModule,
         CardModule,
         RouterModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        ChartModule
     ],
     exports: [
         CommonModule,
@@ -64,7 +66,8 @@ import { RouterModule } from '@angular/router';
         PasswordModule,
         CardModule,
         RouterModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        ChartModule
     ]
 })
 export class ImportsModule { }

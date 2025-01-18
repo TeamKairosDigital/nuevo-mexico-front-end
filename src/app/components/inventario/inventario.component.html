@@ -77,7 +77,7 @@
                 <th pSortableColumn="cantidad_actual">Cantidad actual <p-sortIcon field="cantidad_actual" />
                 <th pSortableColumn="precio_actual">Precio actual <p-sortIcon field="precio_actual" />
                 <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha" />
-                <!-- <th class="align-content-center">Acciones</th> -->
+                <th class="align-content-center">Acciones</th>
             </tr>
         </ng-template>
 
@@ -97,18 +97,18 @@
                 <td>{{ producto.cantidad_actual }}</td>
                 <td>${{ producto.precio_actual }}</td>
                 <td>{{ producto.fecha }}</td>
-                <!-- <td>
+                <td>
                     <div class="flex justify-content-center flex-wrap">
                         <div class="px-2">
-                            <p-button label="Editar" icon="pi pi-pen-to-square" [outlined]="true"
+                            <p-button icon="pi pi-pen-to-square" [outlined]="true"
                                 (onClick)="openModalProducto(producto.id)" />
                         </div>
                         <div class="px-2">
-                            <p-button label="Eliminar" icon="pi pi-trash" severity="danger" [outlined]="true"
-                                (onClick)="confirmDeleteProducto($event, producto.id)" [disabled]="producto.archivos != ''"/>
+                            <p-button icon="pi pi-trash" severity="danger" [outlined]="true"
+                                (onClick)="confirmDeleteProducto($event, producto.id)"/>
                         </div>
                     </div>
-                </td> -->
+                </td>
             </tr>
         </ng-template>
 
@@ -167,7 +167,7 @@
     <p-confirmDialog />
 
     <!-- AGREGAR PRODUCTO -->
-    <p-dialog [(visible)]="dialogProduct" [style]="{ width: '750px' }" header="Agregar producto" [modal]="true"
+    <p-dialog [(visible)]="dialogProduct" [style]="{ width: '750px', height: '600px' }" header="Agregar producto" [modal]="true"
         styleClass="p-fluid">
         <ng-template pTemplate="content">
 
@@ -205,16 +205,18 @@
                 </p-dropdown>
             </div>
 
-            <div class="field">
-                <label for="name">Inventario inicial:</label>
-                <input id="disabled-input" type="number" [(ngModel)]="this.createInventarioDto.inventario_inicial"
-                    pInputText />
-            </div>
-
-            <div class="field">
-                <label for="name">Costo inicial:</label>
-                <input id="disabled-input" type="number" [(ngModel)]="this.createInventarioDto.costo_inicial"
-                    pInputText />
+            <div *ngIf="this.inventario_inicial == 0 && this.costo_inicial == 0">
+                <div class="field">
+                    <label for="name">Inventario inicial:</label>
+                    <input id="disabled-input" type="number" [(ngModel)]="this.createInventarioDto.inventario_inicial"
+                        pInputText />
+                </div>
+    
+                <div class="field">
+                    <label for="name">Costo inicial:</label>
+                    <input id="disabled-input" type="number" [(ngModel)]="this.createInventarioDto.costo_inicial"
+                        pInputText />
+                </div>
             </div>
 
         </ng-template>

@@ -1,11 +1,13 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
   private currentTheme!: string;
+  private themeChanged = new Subject<void>();
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -26,6 +28,7 @@ export class ThemeService {
         themeLink.href = `https://cdn.jsdelivr.net/npm/primeng/resources/themes/${theme}/theme.css`;
         this.currentTheme = theme;
         localStorage.setItem('theme', theme);
+        this.themeChanged.next();  // Emitir evento cuando el tema cambia
       } else {
         console.error('Elemento link para el tema no encontrado.');
       }
@@ -45,5 +48,10 @@ export class ThemeService {
 
   getCurrentTheme(): string {
     return this.currentTheme;
+  }
+
+  // Observable para suscribirse a los cambios de tema
+  getThemeChangedObservable() {
+    return this.themeChanged.asObservable();
   }
 }

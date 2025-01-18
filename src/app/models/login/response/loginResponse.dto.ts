@@ -4,16 +4,14 @@ export class LoginResponseDto implements Deserializable {
     id: number;
     username: string;
     nombre: string;
-    mombreMunicipio: string;
-    municipality_id: number;
+    rol: string;
     access_token: string;
 
     constructor() {
         this.id = 0;
         this.username = '';
         this.nombre = '';
-        this.mombreMunicipio = '';
-        this.municipality_id = 0;
+        this.rol = '';
         this.access_token = '';
     }
 

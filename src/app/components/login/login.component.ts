@@ -43,7 +43,7 @@ export class LoginComponent {
                   // Almacenar datos del usuario
                   this.storeUserData(response.data);
                   // Redirigir al usuario
-                  this.router.navigate(['/inventario']);
+                  this.router.navigate(['/dashboard']);
               } else {
                   this.messageService.add({
                       severity: 'error', 
@@ -77,6 +77,8 @@ export class LoginComponent {
   private storeUserData(data: LoginResponseDto): void {
     this.storageService.setItem('userId', data.id);
     this.storageService.setItem('username', data.username);
+    this.storageService.setItem('nombre', data.nombre);
+    this.storageService.setItem('rol', data.rol);
     this.storageService.setItem('access_token', data.access_token);
   }
 
