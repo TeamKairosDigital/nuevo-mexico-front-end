@@ -52,4 +52,8 @@ export class RhService {
     return this.http.get<ApiResponse<itemsResponseDto[]>>(`${this.apiUrl}/getTipoEmpleado`);
   }
 
+  getEmpleados(): Observable<ApiResponse<itemsResponseDto[]>> {
+    return this.http.get<ApiResponse<itemsResponseDto[]>>(`${this.apiUrl}/getEmpleados`);
+  }
+
 }

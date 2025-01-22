@@ -1,0 +1,282 @@
+<app-side-bar></app-side-bar>
+<div class="card flex align-items-center">
+    <h2 class="mx-auto font-size: 4rem">Tienda - Cocina</h2>
+</div>
+
+<div class="card">
+
+    <!-- FILTROS -->
+    <p-card>
+        <div class="flex align-items-center justify-content-center">
+            <!-- Filtro Empleados -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Empleados:</label>
+                <p-dropdown 
+                    [options]="empleadosFiltro" 
+                    [(ngModel)]="this.filterVentaDto.idEmpleado" 
+                    optionLabel="nombre"
+                    optionValue="id" 
+                    placeholder="Seleccionar Empleados">
+                </p-dropdown>
+            </div>
+            <!-- Filtro Unidades -->
+            <div class="flex align-items-center mr-5">
+                <label class="mr-2">Productos:</label>
+                <p-dropdown 
+                    [options]="productosFiltro"
+                    [(ngModel)]="this.filterVentaDto.idProducto"
+                    optionLabel="nombre"
+                    optionValue="id"
+                    placeholder="Seleccionar unidad">
+                </p-dropdown>
+            </div>
+            <!-- Filtro Nombre -->
+            <!-- <div class="flex align-items-center mr-5">
+                <label class="mr-2">Buscar por nombre:</label>
+                <input id="disabled-input" type="text" [(ngModel)]="this.filterVentaDto.nombreProducto"
+                pInputText />
+            </div> -->
+
+            <div>
+                <p-button label="Buscar" [raised]="true" (onClick)="buscar()"/>
+            </div>
+        </div>
+    </p-card>
+
+    <!-- TABLA -->
+    <p-table [value]="ventaResponseDto" dataKey="id" [paginator]="true" [rows]="5" [first]="first"
+        [showCurrentPageReport]="true" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped"
+        [sortOrder]="-1" currentPageReportTemplate="Mostrando de {first} a {last} de {totalRecords} datos"
+        (onPage)="pageChange($event)" [rowsPerPageOptions]="[5, 10, 15]" [expandedRowKeys]="expandedRows">
+
+        <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-around">
+                <div>
+                    <h3 class="m-0">Lista de Ventas</h3>
+                </div>
+                <div>
+                    <!-- <i class="pi pi-file-plus cursor-pointer" style="font-size: 2rem"
+                        (click)="openModalProducto()"></i> -->
+                    <p-button label="Agregar Producto" icon="pi pi-plus cursor-pointer" severity="primary"
+                    [outlined]="true" (onClick)="openModalVenta()" />
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Header -->
+        <ng-template pTemplate="header">
+            <tr class="p-text-center">
+                <th style="width:5%">
+                <!-- <th pSortableColumn="id">ID <p-sortIcon field="id" /> -->
+                <th style="width:10%" pSortableColumn="codigoEmpleado">Código empleado <p-sortIcon field="codigoEmpleado" />
+                <th style="width:10%" pSortableColumn="nombreEmpleado">Nombre empleado <p-sortIcon field="nombreEmpleado" />
+                <th pSortableColumn="cantidadUnidad">Cantidad unidad <p-sortIcon field="cantidadUnidad" />
+                <th pSortableColumn="nombreProducto">Nombre Producto <p-sortIcon field="nombreProducto" />
+                <th pSortableColumn="precioSugerido">Precio sugerido <p-sortIcon field="precioSugerido" />
+                <th pSortableColumn="montoTotal">Total<p-sortIcon field="montoTotal" />
+                <th pSortableColumn="pagoEfectivo">Pago efectivo <p-sortIcon field="pagoEfectivo" />
+                <th pSortableColumn="fechaCracion">fechaCracion <p-sortIcon field="fechaCracion" />
+                <th class="align-content-center">Acciones</th>
+            </tr>
+        </ng-template>
+
+        <!-- Body -->
+        <ng-template pTemplate="body" let-producto>
+            <tr class="align-items-center">
+                <td>
+                    <p-button type="button" pRipple [pRowToggler]="producto" [text]="true" [rounded]="true"
+                        [plain]="true" [icon]="producto.icon" (onClick)="toggleIcon(producto)"/>
+                </td>
+                <td>{{ producto.id }}</td>
+                <td>{{ producto.codigoEmpleado }}</td>
+                <td>{{ producto.nombreEmpleado }}</td>
+                <td>{{ producto.cantidadUnidad }}</td>
+                <td>{{ producto.nombreProducto }}</td>
+                <td>${{ producto.precioSugerido }}</td>
+                <td>{{ producto.montoTotal }}</td>
+                <td>${{ producto.pagoEfectivo }}</td>
+                <td>{{ producto.fechaCracion }}</td>
+                <!-- <td>
+                    <div class="flex justify-content-center flex-wrap">
+                        <div class="px-2">
+                            <p-button icon="pi pi-pen-to-square" [outlined]="true"
+                                (onClick)="openModalProducto(producto.id)" />
+                        </div>
+                        <div class="px-2">
+                            <p-button icon="pi pi-trash" severity="danger" [outlined]="true"
+                                (onClick)="confirmDeleteProducto($event, producto.id)"/>
+                        </div>
+                    </div>
+                </td> -->
+            </tr>
+        </ng-template>
+
+        <!-- Contenido expandido -->
+        <!-- <ng-template pTemplate="rowexpansion" let-producto>
+
+            <tr>
+                <td colspan="12">
+                    <div class="flex align-items-center p-mt-3">
+                        <div class="my-3">
+                            <p-button label="Agregar Entrada" icon="pi pi-plus cursor-pointer" severity="primary"
+                                [outlined]="true" (onClick)="openModalEntrada(producto.id)" />
+                        </div>
+                        <p-table [value]="producto.entradaInventariado" dataKey="idEntrada" class="p-datatable p-mt-3 w-9">
+                            <ng-template pTemplate="header">
+                                <tr class="p-text-center">
+                                    <th style="width: 14%;">ID</th>
+                                    <th style="width: 14%;">Entrada</th>
+                                    <th style="width: 14%;">Costo</th>
+                                    <th style="width: 14%;">Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-entradaInventariado>
+                                <tr class="p-text-center">
+                                    <td>{{ entradaInventariado.id }}</td>
+                                    <td>{{ entradaInventariado.entrada }}</td>
+                                    <td>${{ entradaInventariado.costo }}</td>
+                                    <td>{{ entradaInventariado.fecha }}</td>
+                                    <td>
+                                        <div class="flex justify-content-center flex-wrap">
+                                            <div class="px-2">
+                                                <p-button label="" icon="pi pi-pen-to-square" [outlined]="true"
+                                                    (onClick)="getAvisoPrivacidadArchivo(entradaInventariado.id, false)" />
+                                            </div>
+                                            <div class="px-2">
+                                                <p-button label="" icon="pi pi-trash" severity="danger" [outlined]="true"
+                                                    (onClick)="confirmDeleteEntrada($event, entradaInventariado.id)" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr class="p-text-center">
+                                    <td colspan="6">Aún no hay entrada inventariado para este producto.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </td>
+            </tr>
+        </ng-template> -->
+    </p-table>
+
+    <p-confirmDialog />
+
+    <!-- AGREGAR VENTA -->
+    <p-dialog [(visible)]="dialogVenta" [style]="{ width: '1000px' }" header="Crear venta" [modal]="true"
+        styleClass="p-fluid">
+        <ng-template pTemplate="content">
+
+            <div class="mb-3">
+                <label class="mb-2">Selecciona un empleado:</label>
+                <p-dropdown 
+                    [options]="empleados" 
+                    [(ngModel)]="this.createVentaDto.empleado_id" 
+                    optionLabel="nombre"
+                    optionValue="id" 
+                    placeholder="Seleccionar empleado">
+                </p-dropdown>
+            </div>
+
+            <div class="mb-3">
+                <label class="mb-2">Selecciona un producto:</label>
+                <p-dropdown 
+                    [options]="productos" 
+                    optionLabel="nombre"
+                    optionValue="id" 
+                    placeholder="Seleccionar producto"
+                    (onChange)="onProductoSeleccionado($event)">
+                </p-dropdown>
+            </div>
+            
+            <div *ngIf="productoSeleccionado" class="form-fields">
+                <div class="field">
+                    <label for="cantidad">Cantidad:</label>
+                    <input id="cantidad" type="number" [(ngModel)]="cantidad" pInputText />
+                </div>
+            
+                <div class="field">
+                    <label for="pagoEfectivo">Pago efectivo:</label>
+                    <input id="pagoEfectivo" type="number" [(ngModel)]="pagoEfectivo" pInputText />
+                </div>
+            
+                <p-button 
+                    label="Agregar" 
+                    icon="pi pi-check" 
+                    [text]="true" 
+                    (onClick)="agregarProducto()" 
+                    [disabled]="!cantidad || cantidad <= 0 || !pagoEfectivo || pagoEfectivo <= 0">
+                </p-button>
+            </div>
+
+            <!-- TABLA -->
+            <p-table [value]="createVentaDto.listaProductos" dataKey="id" [paginator]="true" [rows]="5" [first]="first"
+                [showCurrentPageReport]="true" [tableStyle]="{ 'min-width': '50rem' }" styleClass="p-datatable-striped"
+                [sortOrder]="-1" currentPageReportTemplate="Mostrando de {first} a {last} de {totalRecords} datos"
+                (onPage)="pageChange($event)" [rowsPerPageOptions]="[5, 10, 15]" [expandedRowKeys]="expandedRows">
+
+                <ng-template pTemplate="caption">
+                    <div class="flex align-items-center justify-content-around">
+                        <div>
+                            <h3 class="m-0">Lista de Ventas</h3>
+                        </div>
+                    </div>
+                </ng-template>
+
+                <!-- Header -->
+                <ng-template pTemplate="header">
+                    <tr class="p-text-center">
+                        <th pSortableColumn="producto_id">ID <p-sortIcon field="producto_id" />
+                        <th pSortableColumn="nombreProducto">Nombre <p-sortIcon field="nombreProducto" />
+                        <th pSortableColumn="cantidad">Cantidad <p-sortIcon field="cantidad" />
+                        <th pSortableColumn="montoTotal">Monto total <p-sortIcon field="montoTotal" />
+                        <th pSortableColumn="pagoEfectivo">Pago efectivo<p-sortIcon field="pagoEfectivo" />
+                        <th class="align-content-center">Acciones</th>
+                    </tr>
+                </ng-template>
+
+                <!-- Body -->
+                <ng-template pTemplate="body" let-producto>
+                    <tr class="align-items-center">
+                        <td>{{ producto.producto_id }}</td>
+                        <td>{{ producto.nombreProducto }}</td>
+                        <td>{{ producto.cantidad }}</td>
+                        <td>{{ producto.montoTotal }}</td>
+                        <td>${{ producto.pagoEfectivo }}</td>
+                        <td>
+                            <div class="flex justify-content-center flex-wrap">
+                                <!-- <div class="px-2">
+                                    <p-button icon="pi pi-pen-to-square" [outlined]="true"
+                                        (onClick)="openModalProducto(producto.id)" />
+                                </div> -->
+                                <div class="px-2">
+                                    <p-button icon="pi pi-trash" severity="danger" [outlined]="true"
+                                        (onClick)="confirmDeleteProducto($event, producto.producto_id)"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cerrar" icon="pi pi-times" [text]="true" (onClick)="hideDialog('')" />
+            <p-button label="Guardar" icon="pi pi-check" [text]="true" (onClick)="createVenta()"
+                [disabled]="botonValid('')" />
+        </ng-template>
+    </p-dialog>
+
+    <p-toast />
+
+    <div *ngIf="spinner" class="overlay">
+        <p-progressSpinner styleClass="w-4rem h-4rem" strokeWidth="8" fill="var(--surface-ground)"
+            animationDuration=".5s" />
+    </div>
+
+</div>

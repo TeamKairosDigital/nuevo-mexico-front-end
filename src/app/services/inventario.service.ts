@@ -8,6 +8,9 @@ import { inventarioResponseDto } from '../models/inventario/response/inventarioR
 import { createInventarioDto } from '../models/inventario/createInventario.dto';
 import { createEntradaInventarioDto } from '../models/inventario/createEntradaInventario.dto';
 import { itemsResponseDto } from '../models/inventario/response/itemsResponse.dto';
+import { filterVentaDto } from '../models/inventario/filterVenta.dto';
+import { ventaResponseDto } from '../models/inventario/response/ventaResponse.dto';
+import { createVentaDto } from '../models/inventario/createVenta.dto';
 
 @Injectable({
   providedIn: 'root'
@@ -75,6 +78,23 @@ export class InventarioService {
 
   getClasificacionProductos(): Observable<ApiResponse<itemsResponseDto[]>> {
     return this.http.get<ApiResponse<itemsResponseDto[]>>(`${this.apiUrl}/getClasificacionProductos`);
+  }
+
+  // Lista de Ventas
+  getListVentas(parameters: filterVentaDto): Observable<ApiResponse<ventaResponseDto[]>> {
+    return this.http.get<ApiResponse<ventaResponseDto[]>>(`${this.apiUrl}/getListVentas`, {
+      params: parameters as any,
+    });
+  }
+
+  // Crear venta
+  createVenta(data: createVentaDto): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/createVenta`, data);
+  }
+
+  // Obtener lista de productos de inventario
+  getInventario(): Observable<ApiResponse<itemsResponseDto[]>> {
+    return this.http.get<ApiResponse<itemsResponseDto[]>>(`${this.apiUrl}/getInventario`);
   }
 
 

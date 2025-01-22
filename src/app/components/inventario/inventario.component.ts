@@ -149,14 +149,6 @@ export class InventarioComponent {
 
     this.createInventarioDto.idUsuario = Number(this.storageService.getItem('userId'));
     if (this.createInventarioDto.id != 0) {
-      // this.inventarioService.updateInventario(this.createInventarioDto).subscribe((response) => {
-      //   if (response.success) {
-      //     this.hideDialog('Producto');
-      //     this.getListInventario(this.filterInventarioDto);
-      //     this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
-      //   }
-      //   this.spinner = false;
-      // });
       this.inventarioService.updateInventario(this.createInventarioDto).subscribe({
         next: (response) => {
           if (response.success) {
@@ -180,14 +172,6 @@ export class InventarioComponent {
         },
       });
     } else {
-      // this.inventarioService.createInventario(this.createInventarioDto).subscribe((response) => {
-      //   if (response.success) {
-      //     this.hideDialog('Producto');
-      //     this.getListInventario(this.filterInventarioDto);
-      //     this.messageService.add({ severity: 'success', summary: 'Guardado', detail: response.message });
-      //   }
-      //   this.spinner = false;
-      // });
       this.inventarioService.createInventario(this.createInventarioDto).subscribe({
         next: (response) => {
           if (response.success) {
